@@ -5,18 +5,13 @@ public class Main {
     public static void main(String[] args) {
 
         JFrame window = new JFrame("Slow Quest");
-
-        GamePanel gamePanel = new GamePanel();
-
-        window.add(gamePanel);
+        window.add(new GamePanel());
 
         //Game window config
-        window.setSize(640, 480);
+        window.pack();
         window.setResizable(false);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setLocationRelativeTo(null);
         window.setVisible(true);
-
-
     }
 }
