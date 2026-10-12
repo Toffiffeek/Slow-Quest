@@ -45,7 +45,11 @@ public class GamePanel extends JPanel {
         catch (IOException e) { e.printStackTrace();
         }
         loadMap(VILLAGE_MAP);
-        player = new Player(TILE_SIZE, TILE_SIZE,TILE_SIZE, AddictedBoyFront);
+        player = new Player(
+                TILE_SIZE, TILE_SIZE,
+                TILE_SIZE,
+                AddictedBoyFront, AddictedBoyBack,
+                AddictedBoyFront, AddictedBoyBack);
         setPreferredSize(new Dimension(TILE_SIZE * gameMap.getColumns(), TILE_SIZE * gameMap.getRows()));
         setBackground(Color.decode("#c4cfc8")); move("UP", 0, -TILE_SIZE);
         move("DOWN", 0, TILE_SIZE); move("LEFT", -TILE_SIZE, 0);
