@@ -5,7 +5,8 @@ public enum TileType {
     GRASS_HIGH("#548046",true),
     WALL("#695a5b",false),
     TREE("#385237",false),
-    BUILDING("#8f704a",false);
+    BUILDING("#8f704a",false),
+    DOORS("#ffffff", true);
 
     private final Color color;
     private final boolean walkable;

@@ -15,6 +15,11 @@ public class GamePanel extends JPanel {
 
     //Window size config size config
     private final int TILE_SIZE = 64;
+
+    //Maps
+    private final String FOREST_MAP = "/maps/forest.map";
+    private final String VILLAGE_MAP = "/maps/village.map";
+    private String currentMapPath = VILLAGE_MAP;
     private GameMap gameMap;
 
     private Player player;
@@ -39,11 +44,7 @@ public class GamePanel extends JPanel {
         }
         catch (IOException e) { e.printStackTrace();
         }
-        try{
-            gameMap = new GameMap(TILE_SIZE, "/maps/village.map");
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load game map", e);
-        }
+        loadMap(VILLAGE_MAP);
         player = new Player(TILE_SIZE, TILE_SIZE,TILE_SIZE, AddictedBoyFront);
         setPreferredSize(new Dimension(TILE_SIZE * gameMap.getColumns(), TILE_SIZE * gameMap.getRows()));
         setBackground(Color.decode("#c4cfc8")); move("UP", 0, -TILE_SIZE);
@@ -51,6 +52,44 @@ public class GamePanel extends JPanel {
         move("RIGHT", TILE_SIZE, 0); move("W", 0, -TILE_SIZE);
         move("S", 0, TILE_SIZE); move("A", -TILE_SIZE, 0);
         move("D", TILE_SIZE, 0);
+    }
+
+    private void loadMap(String mapPath){
+        try{
+            gameMap = new GameMap(TILE_SIZE, mapPath);
+            currentMapPath = mapPath;
+        } catch(IOException e){
+            throw new RuntimeException("Could not load map: " + mapPath, e);
+        }
+    }
+
+    private void changeMap(String targetMap, int targetCol, int targetRow){
+        loadMap(targetMap);
+
+        player.setPosition(targetCol * TILE_SIZE, targetRow * TILE_SIZE);
+        revalidate();
+        repaint();
+    }
+
+    private void checkMapTransition(){
+        int col = player.getX() / TILE_SIZE;
+        int row = player.getY() / TILE_SIZE;
+
+        System.out.println("Map: " + currentMapPath + "col: " + col + "row: " + row);
+        //village -> forest transition
+        if (currentMapPath.equals(VILLAGE_MAP) && col == 7 && row == 0){
+            changeMap(FOREST_MAP, 7, 9);
+        }
+        else if (currentMapPath.equals(VILLAGE_MAP) && col == 8 && row == 0){
+            changeMap(FOREST_MAP, 8, 9);
+        }
+        //forest -> village transition
+        else if (currentMapPath.equals(FOREST_MAP) && col == 7 && row == 10){
+            changeMap(VILLAGE_MAP, 7, 1);
+        }
+        else if (currentMapPath.equals(FOREST_MAP) && col == 8 && row == 10){
+            changeMap(VILLAGE_MAP, 8, 1);
+        }
     }
 
     private void move(String pressedKey, int dx, int dy){
@@ -76,6 +115,7 @@ public class GamePanel extends JPanel {
                 //checking if the given coordinates are walkable
                 if (gameMap.isWalkable(col, row)) {
                     player.move(dx, dy);
+                    checkMapTransition();
                 }
 
                 repaint();

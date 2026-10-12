@@ -43,6 +43,9 @@ public class MapRepository {
                             row[col] = TileType.WALL;
                             break;
                         case '4':
+                            row[col] = TileType.DOORS;
+                            break;
+                        case '5':
                             row[col] = TileType.GRASS_HIGH;
                             break;
                         default:
