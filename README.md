@@ -47,7 +47,7 @@ The goal is to create an accessible and engaging experience that encourages mind
 Slow-Quest/
 ├── src/          # Java source code
 ├── resources/    # Game assets, including sprites
-├── .gitignore    # Git ignore rules
+├── LICENSE       # MIT License
 └── README.md     # Project documentation
 ```
 
