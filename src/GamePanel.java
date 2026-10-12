@@ -23,10 +23,12 @@ public class GamePanel extends JPanel {
     private GameMap gameMap;
 
     private Player player;
+    private long lastMoveTime = 0;
+    private final long MOVE_DELAY = 150; //miliseconds
 
 
     public GamePanel() {
-        try { URL imageUrl = getClass().getResource("/AddictedBoyFront.png");
+        try { URL imageUrl = getClass().getResource("/sprites/AddictedBoyFront.png");
 
             if (imageUrl == null) {
                 throw new IOException("Sprite AddictedBoyFront.png not found");
@@ -35,7 +37,7 @@ public class GamePanel extends JPanel {
         }
         catch (IOException e) { e.printStackTrace();
         }
-        try { URL imageUrl = getClass().getResource("/AddictedBoyBack.png");
+        try { URL imageUrl = getClass().getResource("/sprites/AddictedBoyBack.png");
 
             if (imageUrl == null) {
                 throw new IOException("Sprite AddictedBoyBack.png not found");
@@ -46,7 +48,7 @@ public class GamePanel extends JPanel {
         }
         loadMap(VILLAGE_MAP);
         player = new Player(
-                TILE_SIZE, TILE_SIZE,
+                7 * TILE_SIZE, 9* TILE_SIZE,
                 TILE_SIZE,
                 AddictedBoyFront, AddictedBoyBack,
                 AddictedBoyFront, AddictedBoyBack);
@@ -103,6 +105,13 @@ public class GamePanel extends JPanel {
         getActionMap().put(pressedKey, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                long currentTime = System.currentTimeMillis();
+
+                if(currentTime - lastMoveTime < MOVE_DELAY){
+                    return;
+                }
+                lastMoveTime = currentTime;
+
                 int nextX = player.getX() + dx;
                 int nextY = player.getY() + dy;
 
