@@ -33,10 +33,7 @@ public class GamePanel extends JPanel {
             {TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL}
     };
 
-
-    //coordinates
-    private int x = TILE_SIZE;
-    private int y = TILE_SIZE;
+    private Player player;
 
 
     public GamePanel() {
@@ -58,6 +55,7 @@ public class GamePanel extends JPanel {
         }
         catch (IOException e) { e.printStackTrace();
         }
+        player = new Player(TILE_SIZE, TILE_SIZE,TILE_SIZE, AddictedBoyFront);
         setPreferredSize(new Dimension(TILE_SIZE * COLUMNS, TILE_SIZE * ROWS));
         setBackground(Color.decode("#c4cfc8")); move("UP", 0, -TILE_SIZE);
         move("DOWN", 0, TILE_SIZE); move("LEFT", -TILE_SIZE, 0);
@@ -73,8 +71,8 @@ public class GamePanel extends JPanel {
         getActionMap().put(pressedKey, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int nextX = x + dx;
-                int nextY = y + dy;
+                int nextX = player.getX() + dx;
+                int nextY = player.getY() + dy;
 
                 int col = nextX / TILE_SIZE;
                 int row = nextY / TILE_SIZE;
@@ -88,8 +86,7 @@ public class GamePanel extends JPanel {
 
                 //checking if the given coordinates are walkable
                 if (MAP_ONE[row][col].isWalkable()) {
-                    x = nextX;
-                    y = nextY;
+                    player.move(dx, dy);
                 }
 
                 repaint();
@@ -113,16 +110,7 @@ public class GamePanel extends JPanel {
             }
 
             //painting the player
-            if (AddictedBoyFront != null) {
-                g.drawImage(
-                        AddictedBoyFront,
-                        x,
-                        y,
-                        TILE_SIZE,
-                        TILE_SIZE,
-                        this
-                );
-            }
+            player.draw(g, this);
         }
 
     }}
