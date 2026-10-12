@@ -1,5 +1,5 @@
 # 🌿 Slow Quest
-
+![SLOW-QUEST BANNER](/resources/sprites/BANNER.png)
 **Slow Quest** is a 2D top-down RPG developed in Java as a student project. The game aims to encourage children to reflect on their digital media habits through a calm, exploration-based experience.
 
 ## 🎮 About the Project
