@@ -9,27 +9,31 @@ import java.awt.event.ActionEvent;
 
 public class GamePanel extends JPanel {
 
+    //sprites
     private BufferedImage AddictedBoyFront;
     private BufferedImage AddictedBoyBack;
-    //size config
+
+    //Window size config size config
     private final int TILE_SIZE = 64;
     private final int COLUMNS = 16;
     private final int ROWS = 11;
 
     //map
-    private final int[][] MAP_ONE = {
-            {1,1,1,1,1,1,1,3,0,1,1,1,1,1,1,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,2,2,0,0,2,2,0,0,0,0,1},
-            {1,0,0,0,0,2,2,0,0,2,2,0,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,2,2,0,0,2,2,0,0,0,0,1},
-            {1,0,0,0,0,2,2,0,0,2,2,0,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+    private final TileType[][] MAP_ONE = {
+            {TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL},
+            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
+            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
+            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
+            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
+            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
+            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
+            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
+            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
+            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
+            {TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL}
     };
+
+
     //coordinates
     private int x = TILE_SIZE;
     private int y = TILE_SIZE;
@@ -75,7 +79,15 @@ public class GamePanel extends JPanel {
                 int col = nextX / TILE_SIZE;
                 int row = nextY / TILE_SIZE;
 
-                if (MAP_ONE[row][col] == 0) {
+                //checking for the end of the map
+                if (col < 0 || col >= COLUMNS ||
+                        row < 0 || row >= ROWS) {
+                    repaint();
+                    return;
+                }
+
+                //checking if the given coordinates are walkable
+                if (MAP_ONE[row][col].isWalkable()) {
                     x = nextX;
                     y = nextY;
                 }
@@ -85,72 +97,32 @@ public class GamePanel extends JPanel {
         });
     }
 
-    private void speak(String pressedKey, int x, int y, BufferedImage oldImage, BufferedImage newImage){
-        if(!pressedKey.equals("SPACE")){
-            return;
-        }
-        if(isNearInteracitve(32, 32)){
-        }
-    };
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        //painting the map
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLUMNS; col++) {
 
                 int tileX = col * TILE_SIZE;
                 int tileY = row * TILE_SIZE;
 
-                if (MAP_ONE[row][col] == 1) {
-                    g.setColor(Color.decode("#b1d080"));
-                    g.fillRect(
-                            tileX, tileY,
-                            TILE_SIZE, TILE_SIZE
-                    );
+                g.setColor(MAP_ONE[row][col].getColor());
+                g.fillRect(tileX, tileY, TILE_SIZE, TILE_SIZE);
+            }
 
-                }
-                else if(MAP_ONE[row][col] == 2) {
-                    g.setColor(Color.decode("#9c3d40"));
-                    g.fillRect(
-                            tileX, tileY,
-                            TILE_SIZE, TILE_SIZE
-                    );
-                }
-                else if(MAP_ONE[row][col] == 3) {
-                    g.setColor(Color.decode("#69405f"));
-                    g.fillRect(
-                            tileX, tileY,
-                            TILE_SIZE, TILE_SIZE
-                    );
-                }
-                else {
-                    g.setColor(Color.decode("#323635"));
-                    g.fillRect(
-                            tileX, tileY,
-                            TILE_SIZE, TILE_SIZE
-                    );
-                }
+            //painting the player
+            if (AddictedBoyFront != null) {
+                g.drawImage(
+                        AddictedBoyFront,
+                        x,
+                        y,
+                        TILE_SIZE,
+                        TILE_SIZE,
+                        this
+                );
             }
         }
 
-        if(AddictedBoyFront != null){
-            g.drawImage(
-                    AddictedBoyFront,
-                    x,
-                    y,
-                    TILE_SIZE,
-                    TILE_SIZE,
-                    this
-            );
-        }
-    }
-
-    private boolean isNearInteracitve(int interactiveX, int interactiveY){
-        int distanceX = Math.abs(x - interactiveX);
-        int distanceY = Math.abs(y - interactiveY);
-
-        return distanceX + distanceY == TILE_SIZE;
-    }
-}
+    }}
