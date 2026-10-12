@@ -15,23 +15,7 @@ public class GamePanel extends JPanel {
 
     //Window size config size config
     private final int TILE_SIZE = 64;
-    private final int COLUMNS = 16;
-    private final int ROWS = 11;
-
-    //map
-    private final TileType[][] MAP_ONE = {
-            {TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL},
-            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
-            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
-            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
-            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
-            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
-            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
-            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.BUILDING, TileType.BUILDING, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
-            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
-            {TileType.WALL, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.GRASS, TileType.WALL},
-            {TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL, TileType.WALL}
-    };
+    private GameMap gameMap;
 
     private Player player;
 
@@ -55,8 +39,13 @@ public class GamePanel extends JPanel {
         }
         catch (IOException e) { e.printStackTrace();
         }
+        try{
+            gameMap = new GameMap(TILE_SIZE, "/maps/village.map");
+        } catch (IOException e) {
+            throw new RuntimeException("Could not load game map", e);
+        }
         player = new Player(TILE_SIZE, TILE_SIZE,TILE_SIZE, AddictedBoyFront);
-        setPreferredSize(new Dimension(TILE_SIZE * COLUMNS, TILE_SIZE * ROWS));
+        setPreferredSize(new Dimension(TILE_SIZE * gameMap.getColumns(), TILE_SIZE * gameMap.getRows()));
         setBackground(Color.decode("#c4cfc8")); move("UP", 0, -TILE_SIZE);
         move("DOWN", 0, TILE_SIZE); move("LEFT", -TILE_SIZE, 0);
         move("RIGHT", TILE_SIZE, 0); move("W", 0, -TILE_SIZE);
@@ -78,14 +67,14 @@ public class GamePanel extends JPanel {
                 int row = nextY / TILE_SIZE;
 
                 //checking for the end of the map
-                if (col < 0 || col >= COLUMNS ||
-                        row < 0 || row >= ROWS) {
+                if (col < 0 || col >= gameMap.getColumns() ||
+                        row < 0 || row >= gameMap.getRows()) {
                     repaint();
                     return;
                 }
 
                 //checking if the given coordinates are walkable
-                if (MAP_ONE[row][col].isWalkable()) {
+                if (gameMap.isWalkable(col, row)) {
                     player.move(dx, dy);
                 }
 
@@ -99,18 +88,10 @@ public class GamePanel extends JPanel {
         super.paintComponent(g);
 
         //painting the map
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < COLUMNS; col++) {
+        gameMap.draw(g);
 
-                int tileX = col * TILE_SIZE;
-                int tileY = row * TILE_SIZE;
+        //painting the player
+        player.draw(g, this);
+    }
 
-                g.setColor(MAP_ONE[row][col].getColor());
-                g.fillRect(tileX, tileY, TILE_SIZE, TILE_SIZE);
-            }
-
-            //painting the player
-            player.draw(g, this);
-        }
-
-    }}
+}
